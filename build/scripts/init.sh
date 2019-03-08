@@ -1,16 +1,4 @@
 #!/usr/bin/env bash
-#
-# This is a Docker Anti-Pattern.  I am putting all the services into
-# one container and I am doing it knowing that this is NOT the way
-# you should do it.   That is just how I roll...
-#
-# Breaking the law, breaking the law ...
-#
-# This is intended for development. It also allows less experienced
-# system operators to deploy to system like QNAP NAS server as one
-# container, without having to understand how to connect and
-# maintain separate services.
-#
 
 if [ $# -eq 0 ]; then
     echo "No command passed, redirecting logs to stdout and stderr"

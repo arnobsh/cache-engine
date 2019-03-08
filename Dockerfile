@@ -39,7 +39,7 @@ RUN curl -LsS https://codeception.com/codecept.phar -o /usr/local/bin/codecept \
 ############################################################################
 RUN a2enmod vhost_alias http2 headers rewrite ssl
 #    && rm -f /etc/apache2/sites-enabled/*
-ADD build/assets/apache2/sites/  /etc/apache2/sites-enabled/
+ADD build/apache2/sites/  /etc/apache2/sites-enabled/
 
 ############################################################################
 ############################################################################
@@ -68,7 +68,7 @@ RUN docker-php-ext-install gd zip ldap gettext \
 #############################################################################
 # Setup Custom apache init file
 #############################################################################
-ADD build/assets/apache2/init.d/apache2 /etc/init.d/apache2
+ADD build/apache2/init.d/apache2 /etc/init.d/apache2
 
 #############################################################################
 # Setup Redis server
@@ -78,8 +78,8 @@ RUN apt-get install -y redis-server
 #############################################################################
 # Setup phpRedisAdmin at https://redis.localhost.cache
 #############################################################################
-ADD build/assets/tools/apache2/tools.conf /etc/apache2/conf-enabled
-ADD build/assets/tools/apache2/sites/ /etc/apache2/sites-enabled/
+ADD build/tools/apache2/tools.conf /etc/apache2/conf-enabled
+ADD build/tools/apache2/sites/ /etc/apache2/sites-enabled/
 RUN mkdir -p /var/tools \
     && git clone https://github.com/erikdubbelboer/phpRedisAdmin.git /var/tools/phpRedisAdmin \
     && cd /var/tools/phpRedisAdmin \
@@ -102,8 +102,8 @@ RUN apt-get install -y mariadb-server mariadb-client \
 ##############################################################################
 ## Setup phpMyAdmin at https://sql.localhost.cache
 ##############################################################################
-ADD build/assets/tools/apache2/tools.conf /etc/apache2/conf-enabled
-ADD build/assets/tools/apache2/sites/ /etc/apache2/sites-enabled/
+ADD build/tools/apache2/tools.conf /etc/apache2/conf-enabled
+ADD build/tools/apache2/sites/ /etc/apache2/sites-enabled/
 RUN echo "###################################################################" \
     && echo "Installing PhpMyAdmin, that can take some time, please wait..." \
     && echo "###################################################################" \
@@ -113,7 +113,7 @@ RUN echo "###################################################################" \
     && composer -n --no-ansi --optimize-autoloader install \
     && mkdir tmp \
     && chmod a+rw tmp
-ADD build/assets/tools/phpMyAdmin/config.inc.php /var/tools/phpmyadmin
+ADD build/tools/phpMyAdmin/config.inc.php /var/tools/phpmyadmin
 
 
 #############################################################################
@@ -139,7 +139,7 @@ RUN rm -f /var/log/apache2/access.log \
 ENV TINI_VERSION v0.16.1
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 # Add custom init script
-ADD build/assets/scripts/init.sh /etc/init.sh
+ADD build/scripts/init.sh /etc/init.sh
 ENTRYPOINT ["/tini", "/etc/init.sh"]
 RUN chmod +x /tini \
     && chmod +x /etc/init.sh
