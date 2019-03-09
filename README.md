@@ -6,7 +6,7 @@ Cache Storage Engine
 Cache Service actually works as storage of the objects in Key Value pairs. Right now, it is incorporated with
 Redis cache service . But we can extend the service with the Mysql Adapter/Database adapter/Any other caching mechanism based on our needs
 
-`composer require storage`
+`composer require arnobsh/cache`
 
 # Test URL
 
