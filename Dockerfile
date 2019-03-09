@@ -71,6 +71,23 @@ RUN docker-php-ext-install gd zip ldap gettext \
 ADD build/apache2/init.d/apache2 /etc/init.d/apache2
 
 #############################################################################
+# Setup Memcached
+#############################################################################
+RUN apt-get update \
+  && apt-get install -y libmemcached11 libmemcachedutil2 build-essential libmemcached-dev libz-dev \
+  && pecl install memcached \
+  && echo extension=memcached.so >> /usr/local/etc/php/conf.d/memcached.ini \
+  && apt-get remove -y build-essential libmemcached-dev libz-dev \
+  && apt-get autoremove -y \
+  && apt-get clean \
+  && rm -rf /tmp/pear \
+  && docker-php-ext-enable memcached
+
+#RUN git clone https://github.com/php-memcached-dev/php-memcached /usr/src/php/ext/memcached \
+#  && cd /usr/src/php/ext/memcached && git checkout -b php7 origin/php7 \
+#  && docker-php-ext-configure memcached \
+#  && docker-php-ext-install memcached
+#############################################################################
 # Setup Redis server
 #############################################################################
 RUN apt-get install -y redis-server
@@ -78,12 +95,12 @@ RUN apt-get install -y redis-server
 #############################################################################
 # Setup phpRedisAdmin at https://redis.localhost.cache
 #############################################################################
-ADD build/tools/apache2/tools.conf /etc/apache2/conf-enabled
-ADD build/tools/apache2/sites/ /etc/apache2/sites-enabled/
-RUN mkdir -p /var/tools \
-    && git clone https://github.com/erikdubbelboer/phpRedisAdmin.git /var/tools/phpRedisAdmin \
-    && cd /var/tools/phpRedisAdmin \
-    && composer -n --no-ansi --optimize-autoloader install
+#ADD build/tools/apache2/tools.conf /etc/apache2/conf-enabled
+#ADD build/tools/apache2/sites/ /etc/apache2/sites-enabled/
+#RUN mkdir -p /var/tools \
+#    && git clone https://github.com/erikdubbelboer/phpRedisAdmin.git /var/tools/phpRedisAdmin \
+#    && cd /var/tools/phpRedisAdmin \
+#    && composer -n --no-ansi --optimize-autoloader install
 
 ##############################################################################
 ## Setup MariaDB
@@ -102,18 +119,18 @@ RUN apt-get install -y mariadb-server mariadb-client \
 ##############################################################################
 ## Setup phpMyAdmin at https://sql.localhost.cache
 ##############################################################################
-ADD build/tools/apache2/tools.conf /etc/apache2/conf-enabled
-ADD build/tools/apache2/sites/ /etc/apache2/sites-enabled/
-RUN echo "###################################################################" \
-    && echo "Installing PhpMyAdmin, that can take some time, please wait..." \
-    && echo "###################################################################" \
-    && mkdir -p /var/tools \
-    && git clone https://github.com/phpmyadmin/phpmyadmin.git /var/tools/phpmyadmin \
-    && cd /var/tools/phpmyadmin \
-    && composer -n --no-ansi --optimize-autoloader install \
-    && mkdir tmp \
-    && chmod a+rw tmp
-ADD build/tools/phpMyAdmin/config.inc.php /var/tools/phpmyadmin
+#ADD build/tools/apache2/tools.conf /etc/apache2/conf-enabled
+#ADD build/tools/apache2/sites/ /etc/apache2/sites-enabled/
+#RUN echo "###################################################################" \
+#    && echo "Installing PhpMyAdmin, that can take some time, please wait..." \
+#    && echo "###################################################################" \
+#    && mkdir -p /var/tools \
+#    && git clone https://github.com/phpmyadmin/phpmyadmin.git /var/tools/phpmyadmin \
+#    && cd /var/tools/phpmyadmin \
+#    && composer -n --no-ansi --optimize-autoloader install \
+#    && mkdir tmp \
+#    && chmod a+rw tmp
+#ADD build/tools/phpMyAdmin/config.inc.php /var/tools/phpmyadmin
 
 
 #############################################################################
@@ -153,6 +170,6 @@ ENV MYSQL_USER root
 ENV MYSQL_PWD password
 
 
-EXPOSE 80 443 3000
+EXPOSE 80 443 3000 11211
 
 WORKDIR /var/www

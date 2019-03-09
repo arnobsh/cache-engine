@@ -19,5 +19,11 @@ services:
         - 8081:8081
         - 8082:8082
         - 3000:3000
+      depends_on:
+        - memcached
       volumes:
         - ./:/var/www
+  memcached:
+      image: memcached
+      ports:
+      - '11211:11211'
